@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>
+        Alliswell
+    </title>
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-reply replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            log.c2--简单的日志库
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="log-c2"><a href="#log-c2" class="headerlink" title="log.c2"></a>log.c2</h1><p>A simple logging library.</p>
+<p>Log.c2 is based on <a target="_blank" rel="noopener" href="https://github.com/rxi/log.c">rxi/log.c</a> with <a target="_blank" rel="noopener" href="https://github.com/rxi/log.c/blob/master/LICENSE">MIT LICENSE</a> which is inactive now. Log.c has a very flexible and scalable architecture. There are some enhancements added in log.c2.</p>
+<p>Enhancements:</p>
+<ul>
+<li>Print logs to stdout/stderr.</li>
+<li>Backup log file by file line number.</li>
+<li>Add more log levels.</li>
+<li>Enhance time accuracy.</li>
+<li>…</li>
+</ul>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p><strong><a href="log.c?raw=1">log.c</a></strong> and <strong><a href="log.h?raw=1">log.h</a></strong> should be dropped<br>into an existing project and compiled along with it. The library provides<br>function-like macros for logging:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">log_debug(<span class="keyword">const</span> <span class="keyword">char</span> *fmt, ...);</span><br><span class="line">log_info(<span class="keyword">const</span> <span class="keyword">char</span> *fmt, ...);</span><br><span class="line">log_notice(<span class="keyword">const</span> <span class="keyword">char</span> *fmt, ...);</span><br><span class="line">log_warn(<span class="keyword">const</span> <span class="keyword">char</span> *fmt, ...);</span><br><span class="line">log_error(<span class="keyword">const</span> <span class="keyword">char</span> *fmt, ...);</span><br><span class="line">log_critical(<span class="keyword">const</span> <span class="keyword">char</span> *fmt, ...);</span><br><span class="line">log_alert(<span class="keyword">const</span> <span class="keyword">char</span> *fmt, ...);</span><br><span class="line">log_emergency(<span class="keyword">const</span> <span class="keyword">char</span> *fmt, ...);</span><br></pre></td></tr></table></figure>
+
+<p>Each function takes a printf format string followed by additional arguments:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log_debug(<span class="string">&quot;Hello %s&quot;</span>, <span class="string">&quot;world&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Resulting in a line with the given format printed to stdout/stderr/file:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2020-08-11_16:05:03_877 [EMERGE] [demo_stdout.c:5  ]: this is a log.</span><br></pre></td></tr></table></figure>
+<h4 id="log-stdout-verbose-int-level"><a href="#log-stdout-verbose-int-level" class="headerlink" title="log_stdout_verbose(int level)"></a>log_stdout_verbose(int level)</h4><p>Print log to stdout. Any messages above the given <code>level</code> are ignored.</p>
+<h4 id="log-stderr-verbose-int-level"><a href="#log-stderr-verbose-int-level" class="headerlink" title="log_stderr_verbose(int level)"></a>log_stderr_verbose(int level)</h4><p>Print log to stderr. Any messages above the given <code>level</code> are ignored.</p>
+<h4 id="log-add-fp-FILE-fp-int-level"><a href="#log-add-fp-FILE-fp-int-level" class="headerlink" title="log_add_fp(FILE *fp, int level)"></a>log_add_fp(FILE *fp, int level)</h4><p>One or more file pointers where the log will be written can be provided to the<br>library by using the <code>log_add_fp()</code> function. The data written to the file<br>output is of the following format:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2020-08-11_16:05:03_877 [EMERGE] [demo_stdout.c:5  ]: this is a log.</span><br></pre></td></tr></table></figure>
+
+<p>Any messages above the given <code>level</code> are ignored. If the library failed to add a<br>file pointer a value less-than-zero is returned.</p>
+<h4 id="log-add-file-backup-char-filename-size-t-n-int-level"><a href="#log-add-file-backup-char-filename-size-t-n-int-level" class="headerlink" title="log_add_file_backup(char *filename, size_t n, int level)"></a>log_add_file_backup(char *filename, size_t n, int level)</h4><p>File where the log will be written can be backuped by file line number. The backup will be renamed with a timestamp tail. A new file will be opened to continue logging.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">demo.log  demo.log_2021-08-10_16:31:18_857</span><br></pre></td></tr></table></figure>
+
+<h4 id="log-add-callback-log-LogFn-fn-void-udata-int-level"><a href="#log-add-callback-log-LogFn-fn-void-udata-int-level" class="headerlink" title="log_add_callback(log_LogFn fn, void *udata, int level)"></a>log_add_callback(log_LogFn fn, void *udata, int level)</h4><p>One or more callback functions which are called with the log data can be<br>provided to the library by using the <code>log_add_callback()</code> function. A callback<br>function is passed a <code>log_Event</code> structure containing the <code>line</code> number,<br><code>filename</code>, <code>fmt</code> string, <code>va</code> printf va_list, <code>level</code> and the given <code>udata</code>.</p>
+<h4 id="log-set-lock-log-LockFn-fn-void-udata"><a href="#log-set-lock-log-LockFn-fn-void-udata" class="headerlink" title="log_set_lock(log_LockFn fn, void *udata)"></a>log_set_lock(log_LockFn fn, void *udata)</h4><p>If the log will be written to from multiple threads a lock function can be set.<br>The function is passed the boolean <code>true</code> if the lock should be acquired or<br><code>false</code> if the lock should be released and the given <code>udata</code> value.</p>
+<h4 id="const-char-log-level-string-int-level"><a href="#const-char-log-level-string-int-level" class="headerlink" title="const char* log_level_string(int level)"></a>const char* log_level_string(int level)</h4><p>Returns the name of the given log level as a string.</p>
+<h4 id="LOG-USE-COLOR"><a href="#LOG-USE-COLOR" class="headerlink" title="LOG_USE_COLOR"></a>LOG_USE_COLOR</h4><p>If the library is compiled with <code>-DLOG_USE_COLOR</code> ANSI color escape codes will<br>be used when printing.</p>
+<h2 id="Help"><a href="#Help" class="headerlink" title="Help"></a>Help</h2><p>There are demos in <code>demo/</code>.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">❯ make</span><br><span class="line">❯ ./demo</span><br><span class="line">===========================================================</span><br><span class="line">  Usages: demo [demoname]</span><br><span class="line">Demoname: stdout</span><br><span class="line">Demoname: file</span><br><span class="line">Demoname: file_backup</span><br><span class="line">❯ ./demo stdout</span><br><span class="line">...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="License"><a href="#License" class="headerlink" title="License"></a>License</h2><p>This library is free software; you can redistribute it and/or modify it under<br>the terms of the MIT license. See <a href="LICENSE">LICENSE</a> for details.</p>
+
+    </div>
+
+    
+        <hr class="fhr">
+        <div id="vcomments"></div>
+    
+</div>
+    <div class="footer" id="footer">
+    <p>Copyright © 2020 <a class="flink" target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>-<a class="flink" target="_blank" rel="noopener" href="https://github.com/sanjinhub/hexo-theme-geek">Geek</a>.
+        <label class="el-switch el-switch-green el-switch-sm" style="vertical-align: sub;">
+            <input type="checkbox" name="switch" id="update_style">
+            <span class="el-switch-style"></span>
+        </label>
+<!--         <script type="text/javascript">
+        var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+        document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+        </script> -->
+    </p>
+</div>
+<input type="hidden" id="web_style" value="white">
+<input type="hidden" id="valine_appid" value="ueIePJtaGryN9FhXJieFg0zv-MdYXbMMI">
+<input type="hidden" id="valine_appKey" value="YrCpNBNF8jxrR28HotIjP2Gb">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+    color: #698fca;
+}
+
+.v .vlist .vcard .vhead .vsys {
+    color: #3a3e4a;
+}
+
+.v .vlist .vcard .vh .vmeta .vat {
+    color: #638fd5;
+}
+
+.v .vlist .vcard .vhead .vnick {
+    color: #6ba1ff;
+}
+
+.v a {
+    color: #8696b1;
+}
+
+.v .vlist .vcard .vhead .vnick:hover {
+    color: #669bfc;
+}
+</style>
+</body>
+
+</html>
